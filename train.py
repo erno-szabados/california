@@ -5,6 +5,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import joblib
 import os
+import json
+import sys
+from datetime import datetime
 
 
 def main():
@@ -36,11 +39,43 @@ def main():
     os.makedirs("models", exist_ok=True)
     model_path = os.path.join("models", "model.pkl")
     scaler_path = os.path.join("models", "scaler.pkl")
-    joblib.dump(model, model_path)
-    joblib.dump(scaler, scaler_path)
+    metadata_path = os.path.join("models", "metadata.json")
+
+    # Use compression to reduce size
+    joblib.dump(model, model_path, compress=3)
+    joblib.dump(scaler, scaler_path, compress=3)
+
+    # Write metadata for reproducibility and tracking
+    try:
+        import sklearn as _sk
+        sklearn_version = _sk.__version__
+    except Exception:
+        sklearn_version = None
+
+    try:
+        import joblib as _jb
+        joblib_version = _jb.__version__
+    except Exception:
+        joblib_version = None
+
+    metadata = {
+        "created_at": datetime.utcnow().isoformat() + "Z",
+        "python_version": sys.version.split()[0],
+        "sklearn_version": sklearn_version,
+        "joblib_version": joblib_version,
+        "model_path": model_path,
+        "scaler_path": scaler_path,
+        "n_features_in": getattr(model, "n_features_in_", None),
+        "train_size": len(X_train),
+        "test_size": len(X_test),
+    }
+
+    with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2)
 
     print(f"Saved model to: {model_path}")
     print(f"Saved scaler to: {scaler_path}")
+    print(f"Saved metadata to: {metadata_path}")
 
 
 if __name__ == "__main__":
