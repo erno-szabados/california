@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "skill_id": "uv",
+  "display_name": "uv package manager",
+  "version": "0.1.0",
+  "description": "Machine-friendly manifest describing common `uv` commands and agent usage policies for this project.\nBrief: prefer `uv` for installs, env management, and running project scripts.",
+  "preferred_invocation": "uv run <cmd>",
+  "agent_policy": "Prefer `uv` for installs, environment management, and running scripts. When adding/removing dependencies, run `uv lock` then `uv sync`. Avoid direct `pip`/`python` unless `uv` is unavailable.",
+  "files_to_watch": ["pyproject.toml", "uv.toml", "uv.lock"],
+  "commands": [
+    {
+      "id": "add",
+      "name": "add",
+      "summary": "Add a dependency to the project",
+      "cli_template": "uv add {package} {--dev}",
+      "args": [
+        {"name": "package", "type": "string", "required": true},
+        {"name": "dev", "type": "boolean", "required": false}
+      ]
+    },
+    {
+      "id": "remove",
+      "name": "remove",
+      "summary": "Remove a dependency",
+      "cli_template": "uv remove {package}",
+      "args": [{"name": "package", "type": "string", "required": true}]
+    },
+    {
+      "id": "lock",
+      "name": "lock",
+      "summary": "Update the project's lockfile",
+      "cli_template": "uv lock {--no-progress}",
+      "args": []
+    },
+    {
+      "id": "sync",
+      "name": "sync",
+      "summary": "Install/update the environment from the lockfile",
+      "cli_template": "uv sync {--no-progress} {--offline}",
+      "args": []
+    },
+    {
+      "id": "run",
+      "name": "run",
+      "summary": "Run a command in the project environment",
+      "cli_template": "uv run {cmd} -- {args}",
+      "args": [
+        {"name": "cmd", "type": "string", "required": true},
+        {"name": "args", "type": "array", "required": false}
+      ]
+    },
+    {
+      "id": "export",
+      "name": "export",
+      "summary": "Export the lockfile to an alternate format",
+      "cli_template": "uv export -f {format}",
+      "args": [{"name": "format", "type": "string", "required": true}]
+    }
+  ],
+  "examples": [
+    {
+      "description": "Install dependencies and sync environment",
+      "steps": ["uv add scikit-learn joblib", "uv lock", "uv sync --no-progress"]
+    },
+    {
+      "description": "Run training within project environment",
+      "steps": ["uv run python train.py"]
+    }
+  ]
+}
