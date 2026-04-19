@@ -46,6 +46,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /bin/
 # Copy only the virtual environment from the builder (no source code)
 COPY --chown=app:app --from=builder /app/.venv /app/.venv
 COPY --chown=app:app --from=builder /app/models /app/models
+COPY --chown=app:app --from=builder /app/app.py /app/
 
 WORKDIR /app
 
