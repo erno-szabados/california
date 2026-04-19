@@ -24,3 +24,8 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" \
 Notes
 
 - Training produces `models/model.pkl`, `models/scaler.pkl`, and `models/metadata.json` (metadata includes Python and package versions and dataset split sizes). The `models/` directory is gitignored — store artifacts in an external registry for sharing.
+
+Build-time training rationale
+
+- This project trains a very small, deterministic linear regressor (<2kb, ~50ms). For this specific case it is reasonable to run `train.py` during image build so the runtime image contains the trained artifacts and is self-contained.
+- Tradeoffs: build-time training makes the image build slightly longer but ensures reproducible artifacts are embedded in the image. For larger or non-deterministic models prefer CI/artifact storage or a separate trainer stage.

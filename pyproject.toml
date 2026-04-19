@@ -4,11 +4,21 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
+
+# Only runtime deps here — these are what the final image needs
 dependencies = [
     "fastapi==0.136.0",
-    "matplotlib==3.10.8",
-    "pandas==3.0.2",
-    "scikit-learn==1.8.0",
-    "joblib==1.3.2",
     "uvicorn==0.23.2",
+    "joblib==1.3.2",
+    "numpy==2.4.4",
+    "scikit-learn==1.8.0",
+]
+
+[dependency-groups]
+# Training-only deps; never installed in runtime image
+train = [
+    "scikit-learn==1.8.0",
+    "pandas==3.0.2",
+    "matplotlib==3.10.8",
+    "joblib==1.3.2",
 ]
