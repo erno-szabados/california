@@ -7,7 +7,8 @@
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		"ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {}
+		"ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {},
+		"ghcr.io/devcontainer-community/devcontainer-features/github.com-cli:1": {}
 	}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

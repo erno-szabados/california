@@ -1,0 +1,7 @@
+.venv
+models/
+*.pkl
+*.joblib
+__pycache__/
+.git
+Dockerfile
