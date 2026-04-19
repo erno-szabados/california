@@ -29,6 +29,10 @@ COPY . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-editable
 
+# Train tiny deterministic model at build-time (quick; <100ms here)
+# This produces /app/models which is copied into the runtime image below.
+RUN uv run python train.py --out /app/models
+
 
 # Final runtime image: small, non-root
 FROM python:3.14-slim
@@ -40,7 +44,8 @@ RUN groupadd --system app && useradd --system --create-home --gid app app
 COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /bin/
 
 # Copy only the virtual environment from the builder (no source code)
-COPY --from=builder /app/.venv /app/.venv
+COPY --chown=app:app --from=builder /app/.venv /app/.venv
+COPY --chown=app:app --from=builder /app/models /app/models
 
 WORKDIR /app
 
