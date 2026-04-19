@@ -8,7 +8,7 @@
 		"ghcr.io/devcontainers/features/azure-cli:1": {}
 	},
 
-	"runArgs": ["--secret", "azure-creds"],
+	"runArgs": ["--secret", "azure-creds-ml-training", "--secret", "gh-token-california"],
 
 	"postCreateCommand": "bash .devcontainer/login.sh"
 }

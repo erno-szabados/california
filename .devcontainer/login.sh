@@ -3,19 +3,25 @@ set -euo pipefail
 # Avoid printing secrets to logs
 set +x
 
-# Prefer Podman secrets path
-CREDS_PATH="/run/secrets/azure-creds"
-if [ -f "$CREDS_PATH" ]; then
-  . "$CREDS_PATH"
-else
-  echo "No credentials file found at /run/secrets/azure-creds" >&2
-  exit 1
+# Paths for Podman secrets
+AZ_CREDS_PATH="/run/secrets/azure-creds-ml-training"
+GH_TOKEN_PATH="/run/secrets/gh-token-california"
+
+# Azure login (env-file format: AZ_ID, AZ_SECRET, AZ_TENANT)
+if [ -f "$AZ_CREDS_PATH" ]; then
+  . "$AZ_CREDS_PATH"
+  az login --service-principal -u "$AZ_ID" -p "$AZ_SECRET" --tenant "$AZ_TENANT"
+  unset AZ_ID AZ_SECRET AZ_TENANT
 fi
 
-# Perform login (uses env vars from sourced file)
-az login --service-principal -u "$AZ_ID" -p "$AZ_SECRET" --tenant "$AZ_TENANT"
-
-# Remove sensitive envs from this shell
-unset AZ_ID AZ_SECRET AZ_TENANT
+# GitHub login (token-only file)
+if [ -f "$GH_TOKEN_PATH" ]; then
+  # Use gh's --with-token to read token from stdin (avoids CLI arg exposure)
+  gh auth login --with-token < "$GH_TOKEN_PATH"
+  # Ensure gh config has restrictive permissions
+  if [ -f "$HOME/.config/gh/hosts.yml" ]; then
+    chmod 600 "$HOME/.config/gh/hosts.yml" || true
+  fi
+fi
 
 exit 0
